@@ -25,7 +25,19 @@ public class LobbyManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        if(Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+        }
+        else
+        {
+            if(Instance != null)
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 
     private void Start()
