@@ -77,6 +77,7 @@ public class LobbyManager : MonoBehaviour
     {
         var lobbies = await SteamMatchmaking.LobbyList
 //            .WithDistanceFilter(LobbyDistanceFilter.Worldwide)
+            .FilterDistanceClose()
             .RequestAsync();
 
         foreach (Transform child in lobbyListContent)

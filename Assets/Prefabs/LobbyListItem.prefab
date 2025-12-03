@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5732417446535944723}
   - component: {fileID: 4260516835736960947}
   m_Layer: 5
-  m_Name: MemberCount
+  m_Name: LobbyName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -271,8 +271,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b651c3406fc0046a107bb09126ab8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lobbyNameText: {fileID: 1686284990903657187}
-  playerCountText: {fileID: 4260516835736960947}
+  lobbyNameText: {fileID: 4260516835736960947}
+  playerCountText: {fileID: 1686284990903657187}
   joinButton: {fileID: 144217748316455549}
 --- !u!1 &3842518539983336436
 GameObject:
@@ -286,7 +286,7 @@ GameObject:
   - component: {fileID: 4849112679488952644}
   - component: {fileID: 1686284990903657187}
   m_Layer: 5
-  m_Name: LobbyName
+  m_Name: MemberCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
