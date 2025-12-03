@@ -3,7 +3,7 @@ using UnityEngine;
 public class JoinWorldPanel : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void OnEnable()
     {
         LobbyManager.Instance.RefreshLobbyList();
     }
