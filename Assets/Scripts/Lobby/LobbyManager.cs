@@ -30,6 +30,7 @@ public class LobbyManager : MonoBehaviour
 
     private void Start()
     {
+        /*
         try
         {
             SteamClient.Init(480); // AppID 테스트용
@@ -38,10 +39,12 @@ public class LobbyManager : MonoBehaviour
         {
             Debug.LogError("Steam 초기화 실패");
         }
-
+        */
+        /*
         refreshButton.onClick.AddListener(RefreshLobbyList);
         createButton.onClick.AddListener(CreateLobby);
         applyNameButton.onClick.AddListener(ChangeLobbyName);
+        */
     }
 
     private async void CreateLobby()
