@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class GameSceneManager : MonoBehaviour
@@ -5,7 +6,9 @@ public class GameSceneManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
+
+//        NetworkManager.Singleton.SpawnManager
     }
 
     // Update is called once per frame
