@@ -1,17 +1,17 @@
 using Unity.Netcode;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerController : NetworkBehaviour
 {
-    [Header("Movement")]
-    public float MoveSpeed = 5f;
-    public float RotateSpeed = 10f;
+    public float MoveSpeed = 6f;
+    public float MouseSensitivity = 200f;
 
-    [Header("Interaction")]
-    public float InteractionRange = 10f;
-    public LayerMask GroundLayer;
+    public Transform CameraPivot;
+    private float pitch = 0f;
 
-    private Camera _camera;
+    private Rigidbody rb;
+    private Camera cam;
 
     public override void OnNetworkSpawn()
     {
@@ -21,77 +21,67 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        _camera = Camera.main;
-        
-        // Camera follow logic could be added here or on a separate script
-        if (_camera != null)
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true; // X,Z는 에디터에서 Freeze, 코드에서는 전체를 고정
+
+        cam = Camera.main;
+        if (cam != null)
         {
-            var follow = _camera.gameObject.AddComponent<CameraFollow>();
-            follow.Target = transform;
+            cam.transform.SetParent(CameraPivot);
+            cam.transform.localPosition = Vector3.zero;
+            cam.transform.localRotation = Quaternion.identity;
         }
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
     {
         if (!IsOwner) return;
 
+//        HandleMouseLook();
         HandleMovement();
-        HandleInteraction();
     }
-
-    private void HandleMovement()
-    {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-
-        Vector3 dir = new Vector3(h, 0, v).normalized;
-
-        if (dir.magnitude >= 0.1f)
-        {
-            // Move
-            transform.position += dir * MoveSpeed * Time.deltaTime;
-
-            // Rotate
-            Quaternion targetRot = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, RotateSpeed * Time.deltaTime);
-        }
-    }
-
-    private void HandleInteraction()
-    {
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            // Toggle Housing UI
-            if (HousingUI.Instance != null)
-            {
-                HousingUI.Instance.Toggle();
-            }
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            // Place object or interact
-            // Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            // if (Physics.Raycast(ray, out RaycastHit hit, InteractionRange, GroundLayer))
-            // {
-            //     HousingManager.Instance.TryPlaceObject(hit.point);
-            // }
-        }
-    }
-}
-
-public class CameraFollow : MonoBehaviour
-{
-    public Transform Target;
-    public Vector3 Offset = new Vector3(0, 10, -10);
-    public float SmoothSpeed = 5f;
 
     private void LateUpdate()
     {
-        if (Target == null) return;
+        if (!IsOwner) return;
 
-        Vector3 desiredPos = Target.position + Offset;
-        transform.position = Vector3.Lerp(transform.position, desiredPos, SmoothSpeed * Time.deltaTime);
-        transform.LookAt(Target);
+        HandleMouseLook();
+
+    }
+    // ===========================================
+    // Mouse Look : 몸(Yaw) + 머리(Pitch)
+    // ===========================================
+    private void HandleMouseLook()
+    {
+        float mouseX = Input.GetAxis("Mouse X") * MouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * MouseSensitivity * Time.deltaTime;
+
+        // 몸체(플레이어)는 Y축 회전만 한다 (좌우)
+        transform.Rotate(Vector3.up * mouseX);
+
+        // 머리(Pivot)는 X축 회전 (상하)
+        pitch -= mouseY;
+        pitch = Mathf.Clamp(pitch, -85f, 85f);
+
+//        CameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+        float yaw = transform.eulerAngles.y;
+
+        CameraPivot.rotation = Quaternion.Euler(pitch, yaw, 0f);
+    }
+
+    // ===========================================
+    // Movement
+    // ===========================================
+    private void HandleMovement()
+    {
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+
+        Vector3 input = new Vector3(h, 0f, v).normalized;
+        Vector3 move = transform.TransformDirection(input) * MoveSpeed;
+
+        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
     }
 }

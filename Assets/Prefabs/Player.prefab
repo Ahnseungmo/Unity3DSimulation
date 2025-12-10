@@ -12433,7 +12433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3145900755
+  GlobalObjectIdHash: 199894188
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -12455,11 +12455,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 5
-  RotateSpeed: 10
-  InteractionRange: 10
-  GroundLayer:
-    serializedVersion: 2
-    m_Bits: 0
+  MouseSensitivity: 200
+  CameraPivot: {fileID: 7580054765692314622}
 --- !u!54 &8715888048823956184
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -12507,9 +12504,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1
+  m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &3634852649900138026
 GameObject:
   m_ObjectHideFlags: 0
@@ -32251,7 +32248,7 @@ Animator:
   m_GameObject: {fileID: 9024195422790833226}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: ae7b8b29b783efa42802858321c5ca7b, type: 3}
-  m_Controller: {fileID: 9100000, guid: bd480c7cceb329a4a865246ef550f946, type: 2}
+  m_Controller: {fileID: 9100000, guid: 43602059f2065d2429afde4b2853f55e, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
