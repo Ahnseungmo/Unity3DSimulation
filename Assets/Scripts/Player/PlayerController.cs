@@ -13,6 +13,9 @@ public class PlayerController : NetworkBehaviour
     private Rigidbody rb;
     private Camera cam;
 
+    private Animator animator;
+
+    
     public override void OnNetworkSpawn()
     {
         if (!IsOwner)
@@ -35,12 +38,20 @@ public class PlayerController : NetworkBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
+    private void Start()
+    {
+        animator = GetComponentInChildren<Animator>();
+        
+    }
+
     private void Update()
     {
         if (!IsOwner) return;
 
 //        HandleMouseLook();
         HandleMovement();
+        HandleClick();
+
     }
 
     private void LateUpdate()
@@ -76,12 +87,40 @@ public class PlayerController : NetworkBehaviour
     // ===========================================
     private void HandleMovement()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
 
         Vector3 input = new Vector3(h, 0f, v).normalized;
         Vector3 move = transform.TransformDirection(input) * MoveSpeed;
 
         rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
+
+        animator.SetFloat("AxisY", v);
+        animator.SetFloat("AxisX", h);
+    }
+
+    private void HandleClick()
+    {
+        if (Input.GetMouseButtonDown(0)) // 마우스 왼쪽 클릭
+        {
+            Vector3 center = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
+
+            Ray ray = cam.ScreenPointToRay(center);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                // 충돌 지점에 생성
+                ///                Instantiate(prefab, hit.point, Quaternion.identity);
+                ///                
+                WorldObjectManager.Instance.SpawnObjectServerRpc("Table", hit.point, new Quaternion(0, 0, 0, 0));
+
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Q)) // 마우스 왼쪽 클릭
+        {
+            WorldObjectManager.Instance.SaveMap();
+
+        }
     }
 }

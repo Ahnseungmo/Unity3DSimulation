@@ -15,16 +15,13 @@ public class GameSceneManager : MonoBehaviour
         NetworkManager.Singleton.StartHost();
         Debug.Log("Host started on Steam P2P");
         ///////////////////////////////////////
+        WorldObjectManager.Instance.LoadMap();
 
-  
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            WorldObjectManager.Instance.SpawnObjectServerRpc("table", new Vector3(5, 0, 0),new Quaternion(0,0,0,0));
-        }
+
     }
 }
