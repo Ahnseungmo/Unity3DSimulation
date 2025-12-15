@@ -26,9 +26,22 @@ public class HousingRoomManager : SingletonMonoBehaviour<HousingRoomManager>
         new Vector3Int( 0, 0,-1)
     };
 
+    static readonly Dictionary<Vector3Int, (RoomDirection self, RoomDirection other)> wallMap
+    = new Dictionary<Vector3Int, (RoomDirection, RoomDirection)>
+{
+    { new Vector3Int( 1, 0, 0), (RoomDirection.East,  RoomDirection.West) },
+    { new Vector3Int(-1, 0, 0), (RoomDirection.West,  RoomDirection.East) },
+    { new Vector3Int( 0, 0, 1), (RoomDirection.North, RoomDirection.South) },
+    { new Vector3Int( 0, 0,-1), (RoomDirection.South, RoomDirection.North) },
+    { new Vector3Int( 0, 1, 0), (RoomDirection.Up,    RoomDirection.Down) },
+    { new Vector3Int( 0,-1, 0), (RoomDirection.Down,  RoomDirection.Up) },
+};
+
     // ==================================================
     // 방 추가 (실제 RoomPrefab 생성 포함)
     // ==================================================
+
+    /*
     public bool AddRoom(Vector3Int gridPos)
     {
         if (rooms.Contains(gridPos))
@@ -50,13 +63,59 @@ public class HousingRoomManager : SingletonMonoBehaviour<HousingRoomManager>
         Debug.Log("방 추가됨: " + gridPos);
         return true;
     }
+    */
+    public bool AddRoom(Vector3Int gridPos)
+    {
+        if (rooms.Contains(gridPos))
+            return false;
 
+        rooms.Add(gridPos);
+
+        Vector3 worldPos = GridToWorld(gridPos);
+        GameObject obj = Instantiate(RoomPrefab, worldPos, Quaternion.identity, transform);
+        obj.name = $"Room {gridPos.x},{gridPos.y},{gridPos.z}";
+        roomObjects.Add(gridPos, obj);
+
+        Room newRoom = obj.GetComponent<Room>();
+
+        // 인접 방 검사
+        foreach (var kv in wallMap)
+        {
+            Vector3Int dir = kv.Key;
+            Vector3Int neighborPos = gridPos + dir;
+
+            if (!rooms.Contains(neighborPos))
+                continue;
+
+            // 내 벽 제거
+            newRoom.SetWall(kv.Value.self, false);
+
+            // 이웃 방 벽 제거
+            Room neighborRoom = roomObjects[neighborPos].GetComponent<Room>();
+            neighborRoom.SetWall(kv.Value.other, false);
+        }
+
+        NavMeshSurface.BuildNavMesh();
+        return true;
+    }
 
     // ==================================================
     // 방 삭제 (분리 체크 + 프리팹 삭제)
     // ==================================================
     public bool RemoveRoom(Vector3Int gridPos)
     {
+        foreach (var kv in wallMap)
+        {
+            Vector3Int neighborPos = gridPos + kv.Key;
+
+            if (!rooms.Contains(neighborPos))
+                continue;
+
+            Room neighborRoom = roomObjects[neighborPos].GetComponent<Room>();
+            neighborRoom.SetWall(kv.Value.other, true);
+        }
+
+
         if (!rooms.Contains(gridPos))
         {
             Debug.Log("삭제할 방이 없습니다: " + gridPos);
