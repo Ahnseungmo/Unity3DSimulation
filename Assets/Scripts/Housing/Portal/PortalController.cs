@@ -14,9 +14,10 @@ public class PortalController : MonoBehaviour
     // **선택 사항: Oblique Projection을 위한 설정**
     // 포털 표면 (Surface) 오브젝트의 Transform
     public Transform portalSurfaceTransform;
-
+    /*
     private void LateUpdate()
     {
+        
         // 1. 카메라 위치 동기화: 플레이어 카메라와 현재 포털의 상대적 위치 계산
         Vector3 playerOffsetFromThisPortal = playerCameraTransform.position - transform.position;
 //        portalCamera = Camera.main;
@@ -37,5 +38,26 @@ public class PortalController : MonoBehaviour
         // {
         //     // Oblique Projection Matrix 설정 코드 (생략)
         // }
+
+      
     }
+          */
+    private void LateUpdate()
+    {
+        // === 위치 ===
+        Vector3 localPos = transform.InverseTransformPoint(playerCameraTransform.position);
+        localPos = new Vector3(-localPos.x, localPos.y, -localPos.z);
+        portalCamera.transform.position =
+            otherPortalCameraAnchor.TransformPoint(localPos);
+
+        // === 회전 ===
+        Quaternion localRot =
+            Quaternion.Inverse(transform.rotation) * playerCameraTransform.rotation;
+
+        localRot = Quaternion.Euler(0, 180, 0) * localRot;
+
+        portalCamera.transform.rotation =
+            otherPortalCameraAnchor.rotation * localRot;
+    }
+
 }
