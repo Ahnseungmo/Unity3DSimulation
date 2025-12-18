@@ -72,7 +72,8 @@ public class HousingRoomManager : SingletonMonoBehaviour<HousingRoomManager>
         rooms.Add(gridPos);
 
         Vector3 worldPos = GridToWorld(gridPos);
-        GameObject obj = Instantiate(RoomPrefab, worldPos, Quaternion.identity, transform);
+        GameObject obj = Instantiate(RoomPrefab, new Vector3(0,0,0), Quaternion.identity, transform);
+        obj.transform.localPosition = worldPos;
         obj.name = $"Room {gridPos.x},{gridPos.y},{gridPos.z}";
         roomObjects.Add(gridPos, obj);
 

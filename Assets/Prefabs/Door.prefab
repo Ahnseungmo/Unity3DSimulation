@@ -112,9 +112,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3617128161322129230}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.072775, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -0.6320001, y: 1.072775, z: -0.6320001}
+  m_LocalScale: {x: 1.2643348, y: 2.1455514, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8061130285116554215}
@@ -207,6 +207,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetRenderer: {fileID: 2292979245394449702}
+  matchPosition: 1
+  matchRotation: 1
+  width: 1.2643348
+  height: 2.1455514
 --- !u!114 &88932962817794739
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,8 +476,36 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -6705527992415569853, guid: 5d14f21efd3b5fe4fa581357fe759f14, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2602230867590356892}
   m_SourcePrefab: {fileID: 100100000, guid: 5d14f21efd3b5fe4fa581357fe759f14, type: 3}
+--- !u!1 &666516761048341031 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -6705527992415569853, guid: 5d14f21efd3b5fe4fa581357fe759f14, type: 3}
+  m_PrefabInstance: {fileID: 3156702998776832612}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2602230867590356892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666516761048341031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!23 &2292979245394449702 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: -5468336561951819966, guid: 5d14f21efd3b5fe4fa581357fe759f14, type: 3}
