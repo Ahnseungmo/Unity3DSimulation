@@ -19,10 +19,12 @@ public class TableController : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SeatNPCServerRpc(int seatIndex, ulong npcId)
     {
+        /*
         if (table.TrySeatNPC(seatIndex))
         {
             UpdateSeatClientRpc(seatIndex, npcId);
         }
+*/
     }
 
     [ClientRpc]

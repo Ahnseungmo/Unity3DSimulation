@@ -16,17 +16,19 @@ public class GameSceneManager : MonoBehaviour
         Debug.Log("Host started on Steam P2P");
         ///////////////////////////////////////
         WorldObjectManager.Instance.LoadMap();
-
-
+        HousingRoomManager.Instance.AddRoom(new Vector3Int(0, 0, 0));
+        HousingRoomManager.Instance.AddRoom(new Vector3Int(1, 0, 0));
+        HousingRoomManager.Instance.AddRoom(new Vector3Int(2, 0, 0));
+        HousingRoomManager.Instance.AddRoom(new Vector3Int(0, 0, -1));
+        HousingRoomManager.Instance.AddRoom(new Vector3Int(1, 0, -1));
+        HousingRoomManager.Instance.AddRoom(new Vector3Int(2, 0, -1));
     }
 
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.E)){
-            HousingRoomManager.Instance.AddRoom(new Vector3Int(0, 0, 0));
-            HousingRoomManager.Instance.AddRoom(new Vector3Int(1, 0, 0));
-            HousingRoomManager.Instance.AddRoom(new Vector3Int(2, 0, 0));
+
         }
     }
 

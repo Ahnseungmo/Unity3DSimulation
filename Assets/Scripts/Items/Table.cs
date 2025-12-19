@@ -1,6 +1,10 @@
+using UnityEngine;
+
 public class Table : Furniture
 {
     public int MaxSeat = 4;
+    public Transform[] SeatPoints;
+
     private bool[] seatOccupied;
 
     private void Awake()
@@ -8,13 +12,21 @@ public class Table : Furniture
         seatOccupied = new bool[MaxSeat];
     }
 
-    public bool TrySeatNPC(int seatIndex)
+    // 서버에서만 호출
+    public bool TryAssignSeat(out int seatIndex)
     {
-        if (seatIndex < 0 || seatIndex >= MaxSeat) return false;
-        if (seatOccupied[seatIndex]) return false;
+        seatIndex = -1;
 
-        seatOccupied[seatIndex] = true;
-        return true;
+        for (int i = 0; i < MaxSeat; i++)
+        {
+            if (!seatOccupied[i])
+            {
+                seatOccupied[i] = true;
+                seatIndex = i;
+                return true;
+            }
+        }
+        return false;
     }
 
     public void LeaveSeat(int seatIndex)
@@ -23,12 +35,8 @@ public class Table : Furniture
         seatOccupied[seatIndex] = false;
     }
 
-    public int FindEmptySeat()
+    public Vector3 GetSeatPosition(int seatIndex)
     {
-        for (int i = 0; i < MaxSeat; i++)
-        {
-            if (!seatOccupied[i]) return i;
-        }
-        return -1;
+        return SeatPoints[seatIndex].position;
     }
 }
