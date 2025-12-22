@@ -1,75 +1,73 @@
-using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 
-public class InteriorManager : NetworkBehaviour
+public class InteriorManager : MonoBehaviour
 {
     public static InteriorManager Instance;
 
-    [Header("Indoor / Outdoor Transforms")]
-    public Transform IndoorSpawnPoint;
-    public Transform IndoorDoorPoint;
-    public Transform OutdoorDoorPoint;
-    public Transform OutdoorExitPoint;
+    [Header("Outdoor")]
+    [SerializeField] Transform outdoorDoor;
+    [SerializeField] Transform outdoorExit;
 
-    private void Awake()
+    [Header("Indoor")]
+    [SerializeField] Transform indoorDoor;
+    [SerializeField] Transform indoorSpawn;
+
+    [Header("Tables")]
+    [SerializeField] List<Table> tables = new();
+
+    void Awake()
     {
         Instance = this;
     }
 
-    // ==========================
-    // TABLE QUERY
-    // ==========================
+    // =====================================================
+    // POSITION PROVIDERS
+    // =====================================================
 
-    /// <summary>
-    /// 현재 실내에 배치된 Table 중
-    /// NPC가 앉을 수 있는 테이블을 하나 찾아 반환
-    /// </summary>
+    public Vector3 GetOutdoorDoorPosition()
+        => outdoorDoor.position;
+
+    public Vector3 GetOutdoorExitPosition()
+        => outdoorExit.position;
+
+    public Vector3 GetIndoorDoorPosition()
+        => indoorDoor.position;
+
+    public Vector3 GetIndoorSpawnPosition()
+        => indoorSpawn.position;
+
+    // =====================================================
+    // TABLE MANAGEMENT
+    // =====================================================
+
     public bool TryFindAvailableTable(out Table table, out int seatIndex)
     {
-        table = null;
-        seatIndex = -1;
-
-        if (!IsServer)
-            return false;
-
-        foreach (var t in FindObjectsByType<Table>(FindObjectsSortMode.None))
+        foreach (var t in tables)
         {
-            if (!t.IsPlaced)
-                continue;
-
-            if (t.TryAssignSeat(out seatIndex))
+            if (t.TryReserveSeat(out seatIndex))
             {
                 table = t;
                 return true;
             }
         }
 
+        table = null;
+        seatIndex = -1;
         return false;
     }
 
-    // ==========================
-    // POSITION HELPERS
-    // ==========================
-
-    public Vector3 GetIndoorSpawnPosition()
+#if UNITY_EDITOR
+    void OnDrawGizmos()
     {
-        Vector3 basePos = IndoorDoorPoint.position;
+        Gizmos.color = Color.green;
+        if (indoorSpawn)
+            Gizmos.DrawSphere(indoorSpawn.position, 0.3f);
 
-        if (NavMesh.SamplePosition(basePos, out var hit, 3f, NavMesh.AllAreas))
-            return hit.position;
-
-        Debug.LogError("Indoor spawn has no NavMesh nearby");
-        return basePos;
+        Gizmos.color = Color.blue;
+        if (indoorDoor)
+            Gizmos.DrawSphere(indoorDoor.position, 0.3f);
     }
-
-    public Vector3 GetIndoorDoorPosition()
-        => IndoorDoorPoint.position;
-
-    public Vector3 GetOutdoorDoorPosition()
-        => OutdoorDoorPoint.position;
-
-    public Vector3 GetOutdoorExitPosition()
-        => OutdoorExitPoint.position;
+#endif
 }

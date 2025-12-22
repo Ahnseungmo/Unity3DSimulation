@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEngine.AI;
+ï»¿using System.Collections;
 using Unity.Netcode;
-using System.Collections;
+using UnityEngine.AI;
+using UnityEngine;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class NPCController : NetworkBehaviour
@@ -9,19 +9,23 @@ public class NPCController : NetworkBehaviour
     public enum NPCState
     {
         MoveOutdoorDoor,
-        IndoorTransition,   // ÀÌµ¿ °³³ä ¾øÀ½
+        IndoorTransition,
         MoveToTable,
         Eating,
         ExitIndoor,
-        Leaving
+        Leaving,
+        WaitingForSeat
     }
 
     NavMeshAgent agent;
+
     [SerializeField]
     NPCState state;
 
     Table targetTable;
     int seatIndex = -1;
+
+    float arrivalBlockUntil;
 
     void Awake()
     {
@@ -41,16 +45,15 @@ public class NPCController : NetworkBehaviour
 
     void Update()
     {
-        if (!IsServer)
-            return;
+        if (!IsServer) return;
 
         if (HasArrived())
             OnArrived();
     }
 
-    // ==========================
+    // =========================
     // STATE MACHINE
-    // ==========================
+    // =========================
 
     void ChangeState(NPCState next)
     {
@@ -63,12 +66,8 @@ public class NPCController : NetworkBehaviour
                     InteriorManager.Instance.GetOutdoorDoorPosition());
                 break;
 
-            case NPCState.IndoorTransition:
-                // ÀÌµ¿ °³³ä ¾øÀ½
-                break;
-
             case NPCState.MoveToTable:
-                FindTableAndMove();
+                TryMoveToTable();
                 break;
 
             case NPCState.Eating:
@@ -84,13 +83,15 @@ public class NPCController : NetworkBehaviour
                 agent.SetDestination(
                     InteriorManager.Instance.GetOutdoorExitPosition());
                 break;
+
+            case NPCState.WaitingForSeat:
+                arrivalBlockUntil = Time.time + 1.0f;
+                break;
         }
     }
 
     void OnArrived()
     {
-        Debug.Log($"Arrived state={state}");
-
         switch (state)
         {
             case NPCState.MoveOutdoorDoor:
@@ -98,7 +99,7 @@ public class NPCController : NetworkBehaviour
                 break;
 
             case NPCState.MoveToTable:
-                ChangeState(NPCState.Eating);
+                OnArriveAtSeat();
                 break;
 
             case NPCState.ExitIndoor:
@@ -111,57 +112,57 @@ public class NPCController : NetworkBehaviour
         }
     }
 
-    // ==========================
+    // =========================
     // BEHAVIOR
-    // ==========================
+    // =========================
 
     IEnumerator EnterIndoorRoutine()
     {
         state = NPCState.IndoorTransition;
 
-        agent.isStopped = true;
-        agent.ResetPath();
-        agent.enabled = false;
+        DisableAgent();
 
         Vector3 spawn = InteriorManager.Instance.GetIndoorSpawnPosition();
-
-        if (!NavMesh.SamplePosition(spawn, out var hit, 3f, NavMesh.AllAreas))
-        {
-            Debug.LogError("Indoor spawn invalid");
-            yield break;
-        }
+        NavMesh.SamplePosition(spawn, out var hit, 3f, NavMesh.AllAreas);
 
         transform.position = hit.position;
 
         yield return null;
 
-        agent.enabled = true;
-        agent.Warp(hit.position);
-        agent.isStopped = false;
+        EnableAgent(hit.position);
 
         ChangeState(NPCState.MoveToTable);
     }
 
-    void FindTableAndMove()
+    void TryMoveToTable()
     {
-        if (!agent.enabled || !agent.isOnNavMesh)
-            return;
-
-        if (InteriorManager.Instance.TryFindAvailableTable(
-            out targetTable, out seatIndex))
+        if (InteriorManager.Instance.TryFindAvailableTable(out targetTable, out seatIndex))
         {
             Vector3 seatPos = targetTable.GetSeatPosition(seatIndex);
-
             if (NavMesh.SamplePosition(seatPos, out var hit, 1.5f, NavMesh.AllAreas))
             {
                 agent.SetDestination(hit.position);
                 return;
             }
 
-            targetTable.LeaveSeat(seatIndex);
+            targetTable.ReleaseSeat(seatIndex);
+            targetTable = null;
+            seatIndex = -1;
         }
 
-        ChangeState(NPCState.ExitIndoor);
+        ChangeState(NPCState.WaitingForSeat);
+    }
+
+    void OnArriveAtSeat()
+    {
+        if (targetTable == null || seatIndex < 0)
+        {
+            ChangeState(NPCState.WaitingForSeat);
+            return;
+        }
+
+        targetTable.OccupySeat(seatIndex);
+        ChangeState(NPCState.Eating);
     }
 
     IEnumerator EatRoutine()
@@ -169,8 +170,9 @@ public class NPCController : NetworkBehaviour
         agent.isStopped = true;
         yield return new WaitForSeconds(5f);
 
-        if (targetTable != null)
-            targetTable.LeaveSeat(seatIndex);
+        targetTable?.ReleaseSeat(seatIndex);
+        targetTable = null;
+        seatIndex = -1;
 
         agent.isStopped = false;
         ChangeState(NPCState.ExitIndoor);
@@ -178,51 +180,49 @@ public class NPCController : NetworkBehaviour
 
     IEnumerator ExitIndoorRoutine()
     {
-        agent.isStopped = true;
-        agent.ResetPath();
-        agent.enabled = false;
+        state = NPCState.IndoorTransition;
+
+        DisableAgent();
 
         Vector3 exit = InteriorManager.Instance.GetOutdoorExitPosition();
+        NavMesh.SamplePosition(exit, out var hit, 3f, NavMesh.AllAreas);
 
-        if (NavMesh.SamplePosition(exit, out var hit, 3f, NavMesh.AllAreas))
-        {
-            transform.position = hit.position;
-        }
+        transform.position = hit.position;
 
         yield return null;
 
-        agent.enabled = true;
-        agent.Warp(transform.position);
-        agent.isStopped = false;
+        EnableAgent(hit.position);
 
         ChangeState(NPCState.Leaving);
     }
 
-    // ==========================
+    // =========================
     // UTIL
-    // ==========================
+    // =========================
+
+    void DisableAgent()
+    {
+        agent.isStopped = true;
+        agent.ResetPath();
+        agent.enabled = false;
+    }
+
+    void EnableAgent(Vector3 pos)
+    {
+        agent.enabled = true;
+        agent.Warp(pos);
+        agent.isStopped = false;
+        arrivalBlockUntil = Time.time + 0.25f;
+    }
 
     bool HasArrived()
     {
-        // ÀÌµ¿ »óÅÂ¿¡¼­¸¸ µµÂø ÆÇÁ¤
-        if (state != NPCState.MoveOutdoorDoor &&
-            state != NPCState.MoveToTable &&
-            state != NPCState.ExitIndoor &&
-            state != NPCState.Leaving)
-            return false;
+        if (Time.time < arrivalBlockUntil) return false;
 
-        if (!agent.enabled || !agent.isOnNavMesh)
-            return false;
-
-        if (agent.pathPending)
-            return false;
+        if (!agent.enabled || !agent.isOnNavMesh) return false;
+        if (agent.pathPending) return false;
 
         return agent.remainingDistance <= agent.stoppingDistance + 0.2f &&
                agent.velocity.sqrMagnitude < 0.01f;
-    }
-
-    private void OnDestroy()
-    {
-        Debug.Log($"NPC DESTROYED : {name} | IsServer={IsServer}");
     }
 }

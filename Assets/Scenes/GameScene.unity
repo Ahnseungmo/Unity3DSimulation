@@ -13484,10 +13484,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35de4fe4e95aa644b9f02dd30ea8a947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IndoorSpawnPoint: {fileID: 1435284749}
-  IndoorDoorPoint: {fileID: 1662721638}
-  OutdoorDoorPoint: {fileID: 1662721638}
-  OutdoorExitPoint: {fileID: 1435284749}
+  outdoorDoor: {fileID: 1662721638}
+  outdoorExit: {fileID: 1147801947}
+  indoorDoor: {fileID: 1435284749}
+  indoorSpawn: {fileID: 1854423433}
+  tables: []
 --- !u!4 &1110417026
 Transform:
   m_ObjectHideFlags: 0
@@ -13838,6 +13839,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e88b7bb02ae149940a5a0cddf34fe370, type: 3}
+--- !u!1 &1147801946
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1147801947}
+  m_Layer: 0
+  m_Name: PortalASpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1147801947
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1147801946}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -56.5, y: 1.932, z: -22.01}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1922638016}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1001 &1149267973
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16374,8 +16406,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outdoorDoor: {fileID: 1662721638}
-  outdoorSpawn: {fileID: 1662721638}
-  indoorSpawn: {fileID: 1435284749}
+  outdoorSpawn: {fileID: 1147801947}
+  indoorSpawn: {fileID: 1854423433}
   indoorDoor: {fileID: 1435284749}
 --- !u!4 &1391008338 stripped
 Transform:
@@ -20708,7 +20740,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NPCPrefab: {fileID: 4884459457892497753, guid: 53cb6dd2591e5324cb799db16a52e0a7, type: 3}
   MaxNPC: 10
-  SpawnInterval: 8
+  SpawnInterval: 1
   OutdoorSpawnPoint: {fileID: 485641779}
 --- !u!4 &1698764085
 Transform:
@@ -23176,6 +23208,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4835789832631930, guid: bdf8e7438a7816543998181bd3067573, type: 3}
   m_PrefabInstance: {fileID: 1807351945}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1854423432
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1854423433}
+  m_Layer: 0
+  m_Name: PortalBSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1854423433
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854423432}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: -999.48, z: -0.71}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1922638016}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &1859295107
 GameObject:
   m_ObjectHideFlags: 0
@@ -24119,6 +24182,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4947743726954784, guid: 63ce2b31e16acab4d8a41f884c36333c, type: 3}
   m_PrefabInstance: {fileID: 377928241}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1922638016 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8241224181478464931, guid: 9e6e99808e845fd40b521ac6abd5037a, type: 3}
+  m_PrefabInstance: {fileID: 9045425484128181121}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1924749673 stripped
 Transform:
@@ -26731,7 +26799,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8241224181478464931, guid: 9e6e99808e845fd40b521ac6abd5037a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1147801947}
+    - targetCorrespondingSourceObject: {fileID: 8241224181478464931, guid: 9e6e99808e845fd40b521ac6abd5037a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1854423433}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9e6e99808e845fd40b521ac6abd5037a, type: 3}
 --- !u!1660057539 &9223372036854775807

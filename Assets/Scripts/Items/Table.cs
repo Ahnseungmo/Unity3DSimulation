@@ -5,23 +5,29 @@ public class Table : Furniture
     public int MaxSeat = 4;
     public Transform[] SeatPoints;
 
-    private bool[] seatOccupied;
+    // 0 = 비어있음
+    // 1 = 예약됨 (이동 중)
+    // 2 = 점유됨 (착석 완료)
 
-    private void Awake()
+    private int[] seatState;
+
+    void Awake()
     {
-        seatOccupied = new bool[MaxSeat];
+        seatState = new int[MaxSeat];
     }
 
-    // 서버에서만 호출
-    public bool TryAssignSeat(out int seatIndex)
+    // =========================
+    // RESERVE (이동 시작 시)
+    // =========================
+    public bool TryReserveSeat(out int seatIndex)
     {
         seatIndex = -1;
 
         for (int i = 0; i < MaxSeat; i++)
         {
-            if (!seatOccupied[i])
+            if (seatState[i] == 0)
             {
-                seatOccupied[i] = true;
+                seatState[i] = 1; // 예약
                 seatIndex = i;
                 return true;
             }
@@ -29,14 +35,31 @@ public class Table : Furniture
         return false;
     }
 
-    public void LeaveSeat(int seatIndex)
+    // =========================
+    // OCCUPY (도착 시)
+    // =========================
+    public void OccupySeat(int seatIndex)
     {
-        if (seatIndex < 0 || seatIndex >= MaxSeat) return;
-        seatOccupied[seatIndex] = false;
+        if (!IsValidSeat(seatIndex)) return;
+        seatState[seatIndex] = 2;
+    }
+
+    // =========================
+    // RELEASE (실패 / 퇴장)
+    // =========================
+    public void ReleaseSeat(int seatIndex)
+    {
+        if (!IsValidSeat(seatIndex)) return;
+        seatState[seatIndex] = 0;
     }
 
     public Vector3 GetSeatPosition(int seatIndex)
     {
         return SeatPoints[seatIndex].position;
+    }
+
+    bool IsValidSeat(int index)
+    {
+        return index >= 0 && index < MaxSeat;
     }
 }
