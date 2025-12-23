@@ -35,7 +35,7 @@ public class NPCController : NetworkBehaviour
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
         ModularHeroController controller = GetComponentInChildren<ModularHeroController>();
-        controller.SetAromorPart(Random.Range((int)0,(int)20));
+        controller.SetAromorPart(Random.Range((int)0,(int)18));
     }
 
     public override void OnNetworkSpawn()
