@@ -20,6 +20,13 @@ public class InteriorManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
+
+
+    }
+    private void Start()
+    {
+        tables.Clear();
+        tables.AddRange(FindObjectsByType<Table>(FindObjectsSortMode.None));
     }
 
     // =====================================================
@@ -56,6 +63,16 @@ public class InteriorManager : MonoBehaviour
         table = null;
         seatIndex = -1;
         return false;
+    }
+    public void RegisterTable(Table table)
+    {
+        if (!tables.Contains(table))
+            tables.Add(table);
+    }
+
+    public void UnregisterTable(Table table)
+    {
+        tables.Remove(table);
     }
 
 #if UNITY_EDITOR

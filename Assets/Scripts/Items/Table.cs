@@ -1,3 +1,4 @@
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class Table : Furniture
@@ -15,7 +16,21 @@ public class Table : Furniture
     {
         seatState = new int[MaxSeat];
     }
+    void OnEnable()
+    {
+ //       if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer) return;
 
+        InteriorManager.Instance?.RegisterTable(this);
+//        HousingRoomManager.Instance.NavMeshSurface.BuildNavMesh();
+    }
+
+    void OnDisable()
+    {
+ //       if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer) return;
+
+        InteriorManager.Instance?.UnregisterTable(this);
+  //      HousingRoomManager.Instance.NavMeshSurface.BuildNavMesh();
+    }
     // =========================
     // RESERVE (이동 시작 시)
     // =========================
